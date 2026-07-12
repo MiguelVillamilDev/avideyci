@@ -111,15 +111,15 @@ export default function ExcelUploader({ onConfirm, targetFields }: ExcelUploader
                     onDrop={handleDrop}
                     onClick={() => inputRef.current?.click()}
                     className="
-                        border-2 border-dashed border-[var(--accent-border)]
-                        rounded-2xl bg-[var(--accent-bg)]
+                        border-2 border-dashed border-[var(--accent-yellow-border)]
+                        rounded-2xl bg-[var(--accent-yellow-bg)]
                         py-14 px-6
                         flex flex-col items-center justify-center gap-3
                         cursor-pointer transition-colors
-                        hover:bg-[var(--accent-bg)]/70
+                        hover:bg-[var(--accent-yellow-bg)]/70
                     "
                 >
-                    <i className="fa-solid fa-file-excel text-4xl text-[var(--accent)]"></i>
+                    <i className="fa-solid fa-file-excel text-4xl text-[var(--accent-yellow-text)]"></i>
                     <p className="text-sm font-medium text-gray-700">
                         Arrastra tu archivo aquí o haz clic para seleccionarlo
                     </p>
@@ -140,7 +140,7 @@ export default function ExcelUploader({ onConfirm, targetFields }: ExcelUploader
             {step !== "upload" && (
                 <div className="flex items-center justify-between bg-[whitesmoke] border border-slate-200 rounded-xl px-4 py-3">
                     <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <i className="fa-solid fa-file-excel text-[var(--accent)]"></i>
+                        <i className="fa-solid fa-file-excel text-[var(--accent-yellow-text)]"></i>
                         <span className="font-medium">{fileName}</span>
                         <span className="text-gray-400">· {rawData.length} registros</span>
                     </div>
@@ -181,7 +181,7 @@ export default function ExcelUploader({ onConfirm, targetFields }: ExcelUploader
                                     className="
                                         border border-gray-200 rounded-lg
                                         px-3 py-2 text-sm text-gray-800 bg-white
-                                        focus:outline-none focus:ring-2 focus:ring-[var(--accent-border)]
+                                        focus:outline-none focus:ring-2 focus:ring-[var(--accent-yellow-border)]
                                         transition-shadow
                                     "
                                 >
@@ -214,9 +214,12 @@ export default function ExcelUploader({ onConfirm, targetFields }: ExcelUploader
                             disabled={missingRequired.length > 0}
                             onClick={() => setStep("preview")}
                             className="
-                                px-4 py-2 text-sm font-semibold text-white
-                                bg-[var(--accent)] rounded-lg
-                                hover:brightness-110 active:scale-95
+                                px-4 py-2 text-sm font-semibold
+                                bg-[var(--accent-yellow-bg)]
+                                text-[var(--accent-yellow-text)]
+                                border border-[var(--accent-yellow-border)]
+                                rounded-lg
+                                hover:brightness-95 active:scale-95
                                 transition-all
                                 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:brightness-100
                             "
@@ -245,9 +248,12 @@ export default function ExcelUploader({ onConfirm, targetFields }: ExcelUploader
                         <button
                             onClick={() => onConfirm(mappedRows())}
                             className="
-                                px-4 py-2 text-sm font-semibold text-white
-                                bg-[var(--accent)] rounded-lg
-                                hover:brightness-110 active:scale-95
+                                px-4 py-2 text-sm font-semibold
+                                bg-[var(--accent-yellow-bg)]
+                                text-[var(--accent-yellow-text)]
+                                border border-[var(--accent-yellow-border)]
+                                rounded-lg
+                                hover:brightness-95 active:scale-95
                                 transition-all
                             "
                         >

@@ -1,13 +1,18 @@
 import type { ReactNode } from 'react';
+import EditButton from '../common/EditButton';
 
 interface SimpleTableProps {
   title?: string;
   actions?: ReactNode;
   columns: string[];
   rows: string[][];
+  onEdit?: (rowIndex: number) => void;
+  onDelete?: (rowIndex: number) => void;
 }
 
-export default function SimpleTable({ title, actions, columns, rows }: SimpleTableProps) {
+export default function SimpleTable({ title, actions, columns, rows, onEdit, onDelete }: SimpleTableProps) {
+  const showActionsColumn = Boolean(onEdit || onDelete);
+
   return (
     <div className="mx-auto w-[80%]">
       {title && (
@@ -41,13 +46,18 @@ export default function SimpleTable({ title, actions, columns, rows }: SimpleTab
                     {column}
                   </th>
                 ))}
+                {showActionsColumn && (
+                  <th className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    Acciones
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
               {rows.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={columns.length}
+                    colSpan={columns.length + (showActionsColumn ? 1 : 0)}
                     className="px-4 py-8 text-center text-sm text-slate-400"
                   >
                     No hay datos para mostrar.
@@ -64,6 +74,18 @@ export default function SimpleTable({ title, actions, columns, rows }: SimpleTab
                         {cell}
                       </td>
                     ))}
+                    {showActionsColumn && (
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-2">
+                          {onEdit && (
+                            <EditButton icon="fa-pen-to-square" variant="edit" onClick={() => onEdit(rowIndex)} />
+                          )}
+                          {onDelete && (
+                            <EditButton icon="fa-trash" variant="delete" onClick={() => onDelete(rowIndex)} />
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

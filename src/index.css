@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 @theme {
+--accent-green: #86efac;
+--accent-green-bg: #dcfce7;
+--accent-green-text: #166534;
   --color-foreground: var(--text-h);
   --color-muted: var(--text);
   --color-bg: var(--bg);

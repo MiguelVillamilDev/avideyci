@@ -13,12 +13,12 @@ export default function Button({ title, table, onClick }: ButtonProps) {
                 px-3 py-1.5
                 w-fit
                 rounded-lg
-                bg-[var(--accent)]
-                text-white
+                bg-[var(--accent-green-bg)]
+                text-[var(--accent-green-text)]
                 text-sm font-semibold
                 shadow-sm
                 transition-all duration-200 ease-in-out
-                hover:brightness-110 hover:shadow-md
+                hover:brightness-105 hover:shadow-md
                 active:scale-95
                 cursor-pointer
             "

@@ -1,56 +1,92 @@
 import Button from "../../shared/components/common/Button";
-import SimpleTable from "../../shared/components/table/SimpleTable";
 import Modal from "../../shared/components/modal/Modal";
+import ConfirmDialog from "../../shared/components/modal/ConfimDialog";
+import GroupedTable from "../../shared/components/table/GroupedTable";
+import { useCrudModal } from "../../shared/hooks/modal/UseCrudModal";
+import { useGranjas } from "../../shared/hooks/granja/UseGranjas";
+import type { Granja } from "../../shared/types/granja.types";
+import { ParentFields, childFields } from "../../shared/types/granjas.fields";
 import { useState } from "react";
 
 export default function Granjas() {
-    const [modalTable, setModalTable] = useState<string | null>(null);
+    const { granjas, getGranja, getGalpon, createGranja, updateGranja, deleteGranja, addGalpon, updateGalpon, deleteGalpon } = useGranjas();
+
+    const granjaModal = useCrudModal<Granja>();
+    const [galponContext, setGalponContext] = useState<{ granjaId: string; index: number | null } | null>(null);
+    const [deleteGranjaId, setDeleteGranjaId] = useState<string | null>(null);
+    const [deleteGalponCtx, setDeleteGalponCtx] = useState<{ granjaId: string; index: number } | null>(null);
+
+    const groups = granjas.map((g) => ({
+        id: g.id,
+        parentLabel: g.nombreGranja,
+        parentColumns: [g.fechaEncasetamiento, g.ubicacion, String(g.galpones.length)],
+        children: g.galpones.map((gp) => Object.values(gp)),
+    }));
 
     return (
         <div>
             <Modal
-                isOpen={modalTable === "granjas"}
-                title="Agregar Granja"
-                columns={2}
-                fields={[
-                    { name: "nombreGranja", label: "Nombre Granja", type: "text", required: true },
-                    { name: "fechaEncasetamiento", label: "Fecha Encasetamiento", type: "date", required: true },
-                    { name: "nroGalpon", label: "Nro Galpon", type: "text" },
-                    { name: "avesXGalpon", label: "Aves X Galpon", type: "number" },
-                    {
-                        name: "sexo",
-                        label: "Sexo",
-                        type: "select",
-                        options: [
-                            { label: "Macho", value: "Macho" },
-                            { label: "Hembra", value: "Hembra" },
-                            { label: "Mixto", value: "Mixto" },
-                        ],
-                    },
-                    { name: "peso", label: "Peso", type: "number" },
-                    { name: "edad", label: "Edad", type: "number" },
-                    { name: "ubicacion", label: "Ubicacion", type: "text" },
-                    { name: "horasTrayecto", label: "Horas Trayecto", type: "number" },
-                    { name: "tipoGalpon", label: "Tipo Galpon", type: "text" },
-                    { name: "mortalidad", label: "Mortalidad", type: "number" },
-                ]}
-                onClose={() => setModalTable(null)}
+                isOpen={granjaModal.isOpen}
+                title={granjaModal.isEditing ? "Editar Granja" : "Agregar Granja"}
+                initialData={granjaModal.editingItem as any}
+                fields={ParentFields}
+                onClose={granjaModal.close}
                 onSubmit={(data) => {
-                    console.log(data);
-                    setModalTable(null);
+                    granjaModal.isEditing
+                        ? updateGranja(granjaModal.editingItem!.id, data as any)
+                        : createGranja(data as any);
+                    granjaModal.close();
                 }}
             />
 
-            <SimpleTable
+            <Modal
+                isOpen={galponContext !== null}
+                title={galponContext?.index !== null ? "Editar Galpon" : "Agregar Galpon"}
+                initialData={
+                    galponContext?.index != null
+                        ? (getGalpon(galponContext.granjaId, galponContext.index) as any)
+                        : undefined
+                }
+                fields={childFields}
+                columns={2}
+                onClose={() => setGalponContext(null)}
+                onSubmit={(data) => {
+                    if (!galponContext) return;
+                    galponContext.index !== null
+                        ? updateGalpon(galponContext.granjaId, galponContext.index, data as any)
+                        : addGalpon(galponContext.granjaId, data as any);
+                    setGalponContext(null);
+                }}
+            />
+
+            <ConfirmDialog
+                isOpen={deleteGranjaId !== null}
+                title="¿Eliminar granja?"
+                message="Se eliminará junto con todos sus galpones."
+                onCancel={() => setDeleteGranjaId(null)}
+                onConfirm={() => { deleteGranja(deleteGranjaId!); setDeleteGranjaId(null); }}
+            />
+
+            <ConfirmDialog
+                isOpen={deleteGalponCtx !== null}
+                title="¿Eliminar galpon?"
+                onCancel={() => setDeleteGalponCtx(null)}
+                onConfirm={() => { deleteGalpon(deleteGalponCtx!.granjaId, deleteGalponCtx!.index); setDeleteGalponCtx(null); }}
+            />
+
+            <GroupedTable
                 title="Granjas"
-                actions={<Button title="Agregar Granja" table="granjas" onClick={(table) => setModalTable(table)} />}
-                columns={['Nombre Granja', 'Fecha Encasetamiento', 'Nro Galpon', 'AvesXGalpon', 'Sexo', 'Peso', 'Edad', 'Ubicacion', 'Horas Trayecto', 'Tipo Galpon', 'Mortalidad']}
-                rows={[
-                    ['Granja 1', '2023-06-12', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
-                    ['Granja 2', '2023-06-12', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
-                    ['Granja 3', '2023-06-12', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
-                ]}
+                actions={<Button title="Agregar Granja" table="granjas" onClick={granjaModal.openCreate} />}
+                parentLabel="Granja"
+                parentColumnLabels={['Encasetamiento', 'Ubicacion', 'Galpones']}
+                columns={['Galpon', 'AvesXGalpon', 'Sexo', 'Peso', 'Edad', 'Horas Trayecto', 'Tipo Galpon', 'Mortalidad']}
+                groups={groups}
+                onEditParent={(id) => granjaModal.openEdit(getGranja(id)!)}
+                onDeleteParent={setDeleteGranjaId}
+                onAddChild={(id) => setGalponContext({ granjaId: id, index: null })}
+                onEditChild={(id, index) => setGalponContext({ granjaId: id, index })}
+                onDeleteChild={(id, index) => setDeleteGalponCtx({ granjaId: id, index })}
             />
         </div>
-    )
+    );
 }
